@@ -1,0 +1,9 @@
+name = Islandora Finding Aids Ingest
+description = "Ingest Finding Aids objects"
+package = Islandora
+version = 7.x
+core = 7.x
+dependencies[] = islandora
+dependencies[] = islandora_manuscript
+dependencies[] = islandora_memberofsite
+php = 5.3

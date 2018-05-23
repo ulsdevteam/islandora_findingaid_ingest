@@ -1,0 +1,33 @@
+<?php
+/**
+ * @file
+ * Module used to ingest finding aids objects through the UI.
+ */
+
+define('ISLANDORA_FINDINGAID_INGEST', 'findingaid ingest access');
+
+/**
+ * Implements hook_menu().
+ */
+function islandora_findingaid_ingest_menu() {
+  return array('admin/islandora/findingaid-ingest' => array(
+    'title' => 'Finding Aids Ingest',
+    'description' => 'Upload EAD and MARC to create Finding Aids objects.',
+    'access arguments' => array(ISLANDORA_FINDINGAID_INGEST),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_findingaid_ingest_form'),
+    'file' => 'includes/findingaid_ingest_form.inc',
+  ));
+}
+
+/**
+ * Implements hook_permission().
+ */
+function islandora_findingaid_ingest_permission() {
+  return array(
+    ISLANDORA_FINDINGAID_INGEST => array(
+      'title' => t('Ingest Islandora Finding Aids objects'),
+      'description' => t('User can ingest new Finding Aids objects.'),
+    ),
+  );
+}
