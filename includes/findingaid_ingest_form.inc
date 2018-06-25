@@ -80,8 +80,12 @@ function islandora_findingaid_ingest_form_submit($form, $form_state) {
   $ead_temp_file = $_FILES['files']['tmp_name']['ead'];
   $marc_temp_file = $_FILES['files']['tmp_name']['marc'];
   $namespace = $form_state['values']['namespace'];
+  $uploaded_ead_filename = $_FILES['files']['name']['ead'];
+  $uploaded_marc_filename = $_FILES['files']['name']['marc'];
 
-  islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_file, $marc_temp_file, $selected_sites);
+  islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_file, 
+      $uploaded_ead_filename, $marc_temp_file, $uploaded_marc_filename,
+      $selected_sites);
 }
 
 function islandora_findingaid_ingest_form_validate(&$elements, &$form_state) {
@@ -106,9 +110,8 @@ function islandora_findingaid_ingest_form_validate(&$elements, &$form_state) {
   }
 }
 
-function islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_file, $marc_temp_file, $selected_sites) {
-  $uploaded_ead_filename = $_FILES['name']['ead'];
-  $uploaded_marc_filename = $_FILES['name']['marc'];
+function islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_file,
+    $uploaded_ead_filename, $marc_temp_file, $uploaded_marc_filename, $selected_sites) {
   drupal_set_message(l(t('Ingest another Finding Aids object'), 'admin/islandora/findingaid-ingest'));
   $doc0 = new DOMDocument();
   if (@$doc0->load($ead_temp_file)) {
@@ -156,7 +159,7 @@ function islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_fil
   // update existing or set new MARC datastream
   $datastream->label = $uploaded_marc_filename;
   $datastream->mimeType = 'application/xml';
-  $datastream->setContentFromFile($marc);
+  $datastream->setContentFromFile($marc_temp_file);
   $object->ingestDatastream($datastream);
 
   // This will update the DC record by transforming the current MODS xml.
