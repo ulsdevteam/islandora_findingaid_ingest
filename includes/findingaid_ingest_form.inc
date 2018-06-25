@@ -171,7 +171,15 @@ function islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_fil
     islandora_findingaid_ingest_doDC($object, $mods_file);
   }
   try {
+    // error_log('before ingestObject call');
+    // error_log('state = "' . $object->state . '"');
+    // error_log(print_r($object, true));
     $repository->ingestObject($object);
+    // error_log('loaded object:');
+
+    $obj = islandora_object_load($id);
+    $obj->state = 'A';
+    // error_log(print_r($obj, true));
     drupal_goto('islandora/object/' . $id);
   } catch (Exception $e) {
     drupal_set_message($e->getMessage(), 'error');
