@@ -127,7 +127,7 @@ function islandora_findingaid_ingest_ingest_findingaid($namespace, $ead_temp_fil
   $object = $repository->constructObject($id);
 
   // Get the title from the MARC file
-  $title = islandora_findingaid_ingest_get_xpath_nodeValue($doc_xml, '//d:filedesc/d:titlestmt/d:titleproper');
+  $title = islandora_findingaid_ingest_get_xpath_nodeValue($doc_xml);
   $object->label = ($title) ? $title : $ead_id;
   // Setting the object's models value should create a RELS-EXT
   $object->models = 'islandora:findingAidCModel';
@@ -327,22 +327,34 @@ function islandora_findingaid_ingest_get_ead_id($doc) {
   return $nodeValue;
 }
 
-function islandora_findingaid_ingest_get_xpath_nodeValue($doc_xml, $query) {
+function islandora_findingaid_ingest_get_xpath_nodeValue($doc_xml) {
   $doc = new DOMDocument();
   if (!$doc->loadXML($doc_xml)) {
     die('in islandora_findingaid_ingest_get_xpath_nodeValue, could not load XML - ' . htmlspecialchars(substr($doc_xml, 0, 99)) . '...');
     return '';
   }
+  $nodeValue = $aisValue = NULL;
   $xpath = new DOMXPath($doc);
   $xpath->registerNamespace('d', 'urn:isbn:1-931666-22-9');
-  $results = $xpath->query($query);
-  $nodeValue = NULL;
+  $results = $xpath->query('//d:filedesc/d:titlestmt/d:titleproper');
   // the value coming from the XML usually has a bunch of extra spaces and potential line feeds
   foreach ($results as $result) {
     $nodeValue = str_replace(array("\t", "\r", "\n"), "", trim($result->nodeValue));
   }
   while (strstr($nodeValue, "  ")) {
     $nodeValue = str_replace("  ", " ", $nodeValue);
+  }
+
+  $ais_number_results = $xpath->query('/d:ead/d:eadheader/d:filedesc/d:titlestmt/d:titleproper/d:num');
+  foreach ($ais_number_results as $ais_number_result) {
+    $aisValue = str_replace(array("\t", "\r", "\n"), "", trim($ais_number_result->nodeValue));
+  }
+
+  // if there is an AIS number, do a string-replace to inject a comma.
+  if (!is_null($aisValue)) {
+    $nodeValue = str_replace(" " . $aisValue,
+          ', ' . $aisValue,
+          $nodeValue);
   }
   return $nodeValue;
 }
