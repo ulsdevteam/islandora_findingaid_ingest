@@ -35,7 +35,7 @@ function islandora_findingaid_ingest_form($form, &$form_state) {
   );
   $form['marc'] = array(
     '#type' => 'file',
-    '#title' => t('MARC file'),
+    '#title' => t('MARCXML file'),
     '#upload_location' => 'public://',
     '#upload_validators' => array(
       'file_validate_extensions' => array('xml'),
