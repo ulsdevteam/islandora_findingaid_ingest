@@ -13,13 +13,9 @@ define('TRANSFORM_MODS2DC_STYLESHEET', dirname(__FILE__).'/../../islandora_xml_f
  * Form building function.
  */
 function islandora_findingaid_ingest_form($form, &$form_state) {
-  $sites = variable_get('islandora_memberofsite_sites');
-  $sites_arr = explode("\r\n", $sites);
-  foreach ($sites_arr as $site_rdf_and_url) {
-    @list($site, $site_url) = explode("|", $site_rdf_and_url);
-    if ($site) {
-      $sites_options[$site] = $site;
-    }
+  module_load_include('inc', 'islandora_memberofsite', 'includes/utilities');
+  foreach (islandora_memberofsite_get_sites() as $site) {
+    $sites_options[$site['pid']] = $site['pid'];
   }
 
   $form = array();
